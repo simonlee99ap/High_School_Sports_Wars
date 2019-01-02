@@ -1,3 +1,4 @@
-# Untitled_project
+Name: High School Sports Wars
 
-This project is a demonstration of my personal coding skills
+The goal of this project is to create a functional 2D fighting game themed with high school sports.
+The game will be written using Python codes, specifically with pygame packages.
