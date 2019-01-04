@@ -1,7 +1,8 @@
 import sys, pygame
 from player_class import *
 from projectile_class import *
-import settings
+from platform_class import *
+from settings import *
 
 pygame.init()
 
@@ -37,8 +38,7 @@ while True:
 
 	if keys[pygame.K_LEFT]:
 		player1.move_left()
-
-	if keys[pygame.K_RIGHT]:
+	elif keys[pygame.K_RIGHT]:
 		player1.move_right()
 
 	if keys[pygame.K_UP]:
@@ -47,12 +47,29 @@ while True:
 	if player1.isJump:
 		player1.jump()
 
+	#FIXME: must be a better way using OOP to optimize this process
+	#       and clean up the code
+	for platform in platforms:
+		player1.prevent_fallthrough(platform)
+
+	#checks if the player needs to fall
+	falling = True
+	for platform in platforms:
+		falling = falling and not player1.on_platform(platform)
+
+	if falling and not player1.isJump:
+		player1.fall()
+
+	else:
+		#if not falling reset the fall counter
+		player1.fallcount = 1
 
 	#prevents the tracing of the character as it moves
 	scrn.fill((0,0,0))
 
 	for bullet in player1.bullets:
-		bullet.draw()
+		bullet.draw(scrn)
 
+	draw_platforms()
 	player1.draw()
 	pygame.display.update()

@@ -1,6 +1,7 @@
 import sys, pygame
 from settings import *
 from projectile_class import *
+from platform_class import *
 
 """
 The player, or the character, has the following instance variables:
@@ -17,7 +18,12 @@ jumpcount - denotes how high and fast the player can jump
 vulnerability - true when the player can take damage, false when the player cannot like when blocking
 
 bullets - an array containing projectile class
+fallcount - denotes how long the player has been falling
 """
+def on_platform(player, platform):
+	if (player.y == platform.y - player.height) and (player.x < platform.x + platform.width) and (player.x > platform.x - player.width):
+		return True
+	return False
 
 class Player():
 	def __init__(self, x, y, width, height, speed):
@@ -29,11 +35,10 @@ class Player():
 
 		self.facing = 1
 		self.isJump = False
-		self.jumpcount = 5
-		#checks if a character can be damaged or not
+		self.jumpcount = 8
 		self.vulnerability = True
-
 		self.bullets = []
+		self.fallcount = 1
 
 	def draw(self):
 		pygame.draw.rect(scrn, (255, 0, 0), (self.x, self.y, self.width, self.height))
@@ -49,17 +54,14 @@ class Player():
 		self.facing = 1
 
 	def jump(self):
-		if self.jumpcount >= -5:
-			if self.jumpcount >= 0:
-				self.y -= self.jumpcount ** 2
-			else:
-				self.y += self.jumpcount ** 2
+		if self.jumpcount > 0:
+			self.y -= self.jumpcount ** 2
 			self.jumpcount -= 1
 
 		else:
 			#jumping has concluded
 			self.isJump = False
-			self.jumpcount = 5
+			self.jumpcount = 8
 
 	def throw(self):
 		if len(self.bullets) < 5:
@@ -70,6 +72,21 @@ class Player():
 
 	def defense(self):
 		self.vulnearability = False
+
+	def fall(self):
+		self.y += gravity * self.fallcount ** 2
+		self.fallcount += 1
+
+	def on_platform(self, platform):
+		if (self.y == platform.y - self.height) and (self.x < platform.x + platform.width) and (self.x > platform.x - self.width):
+			return True
+		return False
+
+	def prevent_fallthrough(self, platform):
+		if (self.x < platform.x + platform.width) and (self.x > platform.x - self.width):
+			if platform.y - self.y - self.height > 0 and platform.y - self.y - self.height < gravity * self.fallcount ** 2:
+				self.y = platform.y - self.height
+
 
 class Football_player(Player):
 	pass
