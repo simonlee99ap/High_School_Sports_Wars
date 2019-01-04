@@ -10,3 +10,5 @@ settings.py: Contains global variables that sets up the game screen
 player_class.py: Contains the class definitions for the players
 
 projectile_class.py: Contains the class definitons for the projectiles
+
+platform_class.py: Contains the class definitions for the platform
