@@ -31,6 +31,8 @@ while True:
 		else:
 			player1.bullets.pop(player1.bullets.index(bullet))
 
+	player1.update_state()
+
 	keys = pygame.key.get_pressed()
 
 	if keys[pygame.K_SPACE]:
@@ -41,7 +43,8 @@ while True:
 	elif keys[pygame.K_RIGHT]:
 		player1.move_right()
 
-	if keys[pygame.K_UP]:
+	#jumping mechanism
+	if keys[pygame.K_UP] and (player1.on_any_platform or player1.canJump):
 		player1.isJump = True
 
 	if player1.isJump:
@@ -52,14 +55,12 @@ while True:
 	for platform in platforms:
 		player1.prevent_fallthrough(platform)
 
-	#checks if the player needs to fall
-	falling = True
-	for platform in platforms:
-		falling = falling and not player1.on_platform(platform)
-
-	if falling and not player1.isJump:
+	#falling mechanism
+	if not player1.on_any_platform and not player1.isJump:
 		player1.fall()
-
+	elif keys[pygame.K_DOWN] and not player1.isJump and not player1.on_platform(ground):
+		#prevent .fall() being called twice
+		player1.fall()
 	else:
 		#if not falling reset the fall counter
 		player1.fallcount = 1
